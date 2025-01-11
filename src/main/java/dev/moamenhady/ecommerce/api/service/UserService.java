@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 
@@ -91,6 +92,7 @@ public class UserService {
     public void update(String name) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         user.setName(name);
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
     }
 }
