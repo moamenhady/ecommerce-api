@@ -1,0 +1,1 @@
+ALTER TABLE IF EXISTS "user" RENAME TO "system_user";
