@@ -3,6 +3,7 @@ package dev.moamenhady.ecommerce.api.service;
 import dev.moamenhady.ecommerce.api.model.domain.Product;
 import dev.moamenhady.ecommerce.api.model.dto.ProductUpdateDto;
 import dev.moamenhady.ecommerce.api.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,9 @@ import java.util.UUID;
 
 @Service
 public class ProductService {
+
+    @Value("${ATTACHMENT_PATH}")
+    private String attachmentPath;
 
     private final ProductRepository productRepository;
 
@@ -38,7 +42,7 @@ public class ProductService {
 
     private String saveImageToFileSystem(MultipartFile image) throws IOException {
 
-        String uploadDir = "/opt/ecommerce/images";
+        String uploadDir = attachmentPath;
         File uploadDirectory = new File(uploadDir);
         if (!uploadDirectory.exists()) {
             uploadDirectory.mkdirs();
@@ -79,4 +83,7 @@ public class ProductService {
         return productPage.getContent();
     }
 
+    public int getTotalCount() {
+        return (int) productRepository.count();
+    }
 }

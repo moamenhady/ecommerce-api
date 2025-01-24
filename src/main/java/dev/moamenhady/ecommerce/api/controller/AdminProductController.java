@@ -44,6 +44,8 @@ public class AdminProductController {
 
     @GetMapping("/list-products")
     public ResponseEntity<List<Product>> listProducts(@RequestParam int pageSize, @RequestParam int offset) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.getProducts(pageSize, offset));
+        List<Product> products = productService.getProducts(pageSize, offset);
+        int totalCount = productService.getTotalCount();
+        return ResponseEntity.status(HttpStatus.OK).header(String.valueOf(totalCount)).body(products);
     }
 }

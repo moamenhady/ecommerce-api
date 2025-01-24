@@ -1,12 +1,9 @@
 package dev.moamenhady.ecommerce.api.service;
 
 import dev.moamenhady.ecommerce.api.model.domain.Role;
-import dev.moamenhady.ecommerce.api.model.domain.Token;
 import dev.moamenhady.ecommerce.api.model.domain.User;
 import dev.moamenhady.ecommerce.api.model.enums.RoleEnum;
-import dev.moamenhady.ecommerce.api.model.enums.TokenTypeEnum;
 import dev.moamenhady.ecommerce.api.repository.RoleRepository;
-import dev.moamenhady.ecommerce.api.repository.TokenRepository;
 import dev.moamenhady.ecommerce.api.repository.UserRepository;
 import dev.moamenhady.ecommerce.api.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,14 +21,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
     public UserService(UserRepository userRepository,
                        RoleRepository roleRepository,
-                       TokenRepository tokenRepository,
                        JwtService jwtService,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager) {
@@ -40,7 +35,6 @@ public class UserService {
         this.authenticationManager = authenticationManager;
         this.roleRepository = roleRepository;
         this.jwtService = jwtService;
-        this.tokenRepository = tokenRepository;
     }
 
     public String register(String email, String password) {
@@ -57,11 +51,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        String token = jwtService.generateToken(savedUser);
-
-        saveUserToken(user, token);
-
-        return token;
+        return jwtService.generateToken(savedUser);
     }
 
     public String authenticate(String email, String password) {
@@ -71,23 +61,8 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow();
 
-        String token = jwtService.generateToken(user);
-
-        saveUserToken(user, token);
-
-        return token;
+        return jwtService.generateToken(user);
     }
-
-    private void saveUserToken(User user, String jwtToken) {
-        Token token = new Token();
-        token.setUser(user);
-        token.setToken(jwtToken);
-        token.setTokenType(TokenTypeEnum.BEARER);
-        token.setExpired(false);
-        token.setRevoked(false);
-        tokenRepository.save(token);
-    }
-
 
     public void update(String name) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

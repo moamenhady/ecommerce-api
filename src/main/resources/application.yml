@@ -16,8 +16,3 @@ spring:
     open-in-view: true
 
 
-application:
-  security:
-    jwt:
-      secret-key: ${JWT_SECRET_KEY}
-      expiration: 86400000 # a day
